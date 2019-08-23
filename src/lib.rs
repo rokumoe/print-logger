@@ -1,5 +1,3 @@
-extern crate log;
-
 use std::time::{Duration, SystemTime};
 
 struct Logger;
@@ -10,8 +8,17 @@ impl log::Log for Logger {
     }
 
     fn log(&self, record: &log::Record) {
-        let elapsed = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap() - *EPOCH;
-        println!("[{:04}.{:03}] {} {}", elapsed.as_secs(), elapsed.subsec_millis(), record.level(), record.args());
+        let elapsed = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            - *EPOCH;
+        println!(
+            "[{}.{:03}] {} {}",
+            elapsed.as_secs(),
+            elapsed.subsec_millis(),
+            record.level(),
+            record.args()
+        );
     }
 
     fn flush(&self) {}
@@ -27,7 +34,9 @@ pub fn set_level(lv: log::LevelFilter) {
 
 pub fn init() -> Result<(), log::SetLoggerError> {
     unsafe {
-        _EPOCH = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
+        _EPOCH = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap();
     }
     log::set_logger(&LOGGER).map(|()| set_level(log::LevelFilter::Info))
 }
